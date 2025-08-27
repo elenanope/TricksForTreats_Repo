@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class DogController : MonoBehaviour
 {
+    int eatenBiscuits = 0;
     public int trickDone = -1; //0 bark, 1 sit, 2 paw, 3 platz, 4 ball
     [SerializeField] int hidratation = 10;
     [SerializeField] bool carryingBall;
@@ -51,11 +52,17 @@ public class DogController : MonoBehaviour
             trickDone = 4;
             other.gameObject.SetActive(false);
         }
+        if(other.gameObject.name.Contains("biscuit"))
+        {
+            eatenBiscuits++;
+            other.gameObject.SetActive(false);
+        }
     }
     void Move()
     {
         dogRb.velocity = moveInput * movSpeed;
         dogAnim.SetBool("isWalking", true);
+        if (trickDone != 4) trickDone = -1;
     }
     void DogFlip()
     {
@@ -67,7 +74,7 @@ public class DogController : MonoBehaviour
     //IEnumerator ResetTrickDone()
     public void Walking (InputAction.CallbackContext context)
     {
-        if(trickDone != 4) trickDone = -1;
+        
         moveInput.x = context.ReadValue<Vector2>().x;
         moveInput.z = context.ReadValue<Vector2>().y;
         
@@ -83,7 +90,6 @@ public class DogController : MonoBehaviour
                 carryingBall = false;
             }
         }
-
     }
     public void Sit (InputAction.CallbackContext context)
     {
