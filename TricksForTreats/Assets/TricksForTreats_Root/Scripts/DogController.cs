@@ -1,19 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class DogController : MonoBehaviour
 {
+    public bool gameStarted;
     int eatenBiscuits = 0;
     public int trickDone = -1; //0 bark, 1 sit, 2 paw, 3 platz, 4 ball
-    [SerializeField] int hidratation = 10;
-    [SerializeField] bool carryingBall;
+    [SerializeField] int hydration = 10;
+    public bool carryingBall;
     [SerializeField] bool isFacingRight = true;
+    [SerializeField] bool drinking = false;
     [SerializeField] float movSpeed;
+    [SerializeField] float throwForce;
+    [SerializeField] float drinkTimeElapsed;
     [SerializeField] Animator dogAnim;
     [SerializeField] Rigidbody dogRb;
     [SerializeField] GameObject lastBall;
+    [SerializeField] Vector3 forceDirection;
     Vector3 moveInput;
     
     void Start()
@@ -25,28 +31,70 @@ public class DogController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(dogAnim.GetInteger("trickNumber") != trickDone)
+        if(gameStarted)
         {
-            dogAnim.SetInteger("trickNumber", trickDone);
+            if (hydration > -1)
+            {
+                if (!drinking)
+                {
+                    if (hydration > -1)
+                    {
+                        drinkTimeElapsed += Time.deltaTime;
+                        if (drinkTimeElapsed > 10)
+                        {
+                            if(hydration >0)hydration--;
+                            Debug.Log("Has perdido agua! Te queda " + hydration);
+                            drinkTimeElapsed = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    if (hydration < 11)
+                    {
+                        drinkTimeElapsed += Time.deltaTime;
+                        if (drinkTimeElapsed > 2)
+                        {
+                            if(hydration < 10) hydration++;
+                            Debug.Log("Has bebido agua! Tienes " + hydration);
+                            drinkTimeElapsed = 0;
+                        }
+                    }
+                }
+
+                if (dogAnim.GetInteger("trickNumber") != trickDone)
+                {
+                    dogAnim.SetInteger("trickNumber", trickDone);
+                }
+                if (moveInput.x > 0 && !isFacingRight) DogFlip();
+                else if (moveInput.x < 0 && isFacingRight) DogFlip();
+            }
+            else
+            {
+                Debug.Log("You are dehydrated");
+            }
         }
-        if (moveInput.x > 0 && !isFacingRight) DogFlip();
-        else if (moveInput.x < 0 && isFacingRight) DogFlip();
+        
     }
     private void FixedUpdate()
     {
-        if (moveInput != null && moveInput.x == 0 && moveInput.z == 0)
+        if(gameStarted)
         {
-            dogAnim.SetBool("isWalking", false);
+            if (moveInput != null && moveInput.x == 0 && moveInput.z == 0)
+            {
+                dogAnim.SetBool("isWalking", false);
+            }
+            else
+            {
+                Move();
+            }
         }
-        else
-        {
-            Move();
-        }
+        
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.name == "ball")
+        if(other.gameObject.name.Contains("ball") && lastBall== null)
         {
             dogAnim.SetBool("ball", true);
             carryingBall = true;
@@ -58,6 +106,21 @@ public class DogController : MonoBehaviour
         {
             eatenBiscuits++;
             other.gameObject.SetActive(false);
+            Debug.Log("Te has comido las siguientes galletas!"+eatenBiscuits);
+            //sonido win
+        }
+        if(other.gameObject.name.Contains("fountain"))
+        {
+            drinking = true;
+            //sonido agua
+        }
+
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name.Contains("fountain"))
+        {
+            drinking = false;
         }
     }
     void Move()
@@ -74,6 +137,13 @@ public class DogController : MonoBehaviour
         isFacingRight = !isFacingRight;
     }
     //IEnumerator ResetTrickDone()
+    IEnumerator ResetCollider()
+    {
+        yield return new WaitForSeconds(1);
+        lastBall.GetComponent<BoxCollider>().enabled = true;
+        lastBall = null;
+        yield return null;
+    }
     public void Walking (InputAction.CallbackContext context)
     {
         
@@ -89,11 +159,15 @@ public class DogController : MonoBehaviour
             if(carryingBall)
             {
                 dogAnim.SetBool("ball", false);
+                lastBall.transform.position = transform.position;
                 lastBall.SetActive(true);
-                if(isFacingRight)lastBall.transform.position = new Vector3(transform.position.x +1, transform.position.y, transform.position.z -1 );
-                else lastBall.transform.position = new Vector3(transform.position.x -1, transform.position.y, transform.position.z -1 );
+                lastBall.GetComponent<BoxCollider>().enabled = false;
+                if (isFacingRight) lastBall.GetComponent<Rigidbody>().AddForce(forceDirection, ForceMode.Impulse);
+                //else lastBall.GetComponent<Rigidbody>().AddForce(forceDirection, ForceMode.Impulse);
+                else lastBall.GetComponent<Rigidbody>().AddForce(-forceDirection.x, forceDirection.y, forceDirection.z, ForceMode.Impulse);
                 //lanzar pelota fuera creándola/poniendo la antigua en esa posición
                 carryingBall = false;
+                StartCoroutine(ResetCollider());
             }
         }
     }
@@ -108,6 +182,14 @@ public class DogController : MonoBehaviour
     public void Platz (InputAction.CallbackContext context)
     {
         if (context.performed) trickDone = 3;
+    }
+    public void StartGame ()
+    {
+        gameStarted = true;
+    }
+    public void ExitGame ()
+    {
+        Application.Quit();
     }
 
 }

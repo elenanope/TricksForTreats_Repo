@@ -7,49 +7,88 @@ public class PetitionRewardGenerator : MonoBehaviour
      int trickNumber = -2;
     [SerializeField] int availablesTricks = 4;
     [SerializeField] bool hasBall;
+    [SerializeField] bool nearby;
     [SerializeField] int trickPhase;
     [SerializeField] GameObject trickBubble;
     [SerializeField] GameObject biscuitPrefab;
+    [SerializeField] GameObject ballPrefab = null;
      DogController dogController;
     [SerializeField] Animator trickBubbleAnim;
-
+    /*
     private void Start()
     {
         if (hasBall) availablesTricks++;
     }
+    */
+    private void OnTriggerEnter(Collider other)
+    {
+        nearby = true;
+    }
     private void OnTriggerStay(Collider other)
     {
-        if(other.CompareTag("Player") && trickPhase == 0)
+        if(other.CompareTag("Player"))
         {
-            dogController = other.gameObject.GetComponent<DogController>();
-            GenerateTrick();
-            //if(trickNumber == 4) 
+            if(trickPhase == 0)
+            {
+                    dogController = other.gameObject.GetComponent<DogController>();
+                if (!hasBall)
+                {
+                    GenerateTrick();
+                    //if(trickNumber == 4) 
+                }
+                else
+                {
+                    if (ballPrefab != null)
+                    {
+                        trickNumber = 4;
+                        Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z - 1.5f);
+                        GameObject ball = Instantiate(ballPrefab, objectSpawner, Quaternion.identity);
+                        ball.GetComponent<Rigidbody>().AddForce(Random.Range(4, 9), 0, Random.Range(1, 5), ForceMode.Impulse);
+                        Debug.Log("Bola lanzada");
+                        trickPhase = 1;
+                    }
+                }
+            }
+            
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player") && trickPhase==1)
         {
-            trickPhase = 0; trickBubble.SetActive(false);
+            if(!hasBall)
+            {
+                trickPhase = 0; 
+                trickBubble.SetActive(false);
+            }
+            nearby = false;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (dogController != null && trickPhase != 2)
+        if (dogController != null && trickPhase != 2 && nearby)
         {
-            Debug.Log("debug 1" + dogController.trickDone);
-            if (dogController.trickDone == trickNumber && trickNumber >= 0)
+            //Debug.Log("primer debug: lo que ha hecho el perro, lo que deberia" + dogController.trickDone + trickNumber);
+            if ((dogController.trickDone == trickNumber && trickNumber >= 0) || (dogController.carryingBall))
             {
-                Vector3 biscuitSpawner = new Vector3(transform.position.x + 1, transform.position.y, transform.position.z - 1);
-                Instantiate(biscuitPrefab, biscuitSpawner, Quaternion.identity);
+                if (trickNumber == 4)
+                {
+                    Debug.Log("Checkpoint1");
+                    dogController.gameObject.GetComponent<Animator>().SetBool("ball", false);
+                    dogController.carryingBall = false;
+                }
+                Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z -1.5f);
+                GameObject biscuit = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
+                biscuit.GetComponent<Rigidbody>().AddForce(2, 0, 1, ForceMode.Impulse);
                 trickBubble.SetActive(false);
                 Debug.Log("Completado");
                 trickPhase = 2;
             }
+            
         }
-        else Debug.Log("Error");
+        //else Debug.Log("Error");
     }
     void GenerateTrick()
     {
