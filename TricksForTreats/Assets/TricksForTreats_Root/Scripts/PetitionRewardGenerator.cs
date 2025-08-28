@@ -7,6 +7,7 @@ public class PetitionRewardGenerator : MonoBehaviour
      int trickNumber = -2;
     [SerializeField] int availablesTricks = 4;
     [SerializeField] bool hasBall;
+    [SerializeField] bool lastReactivation;//0 not reactivated yet, 1 don't repeat
     [SerializeField] bool nearby;
     [SerializeField] int trickPhase;
     [SerializeField] GameObject trickBubble;
@@ -22,7 +23,7 @@ public class PetitionRewardGenerator : MonoBehaviour
     */
     private void OnTriggerEnter(Collider other)
     {
-        nearby = true;
+        if (other.CompareTag("Player")) nearby = true;
     }
     private void OnTriggerStay(Collider other)
     {
@@ -78,17 +79,37 @@ public class PetitionRewardGenerator : MonoBehaviour
                     Debug.Log("Checkpoint1");
                     dogController.gameObject.GetComponent<Animator>().SetBool("ball", false);
                     dogController.carryingBall = false;
+                    dogController.lastBall = null;
                 }
                 Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z -1.5f);
                 GameObject biscuit = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
                 biscuit.GetComponent<Rigidbody>().AddForce(2, 0, 1, ForceMode.Impulse);
+                if(trickNumber == 4)
+                {
+                    GameObject biscuit2 = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
+                    biscuit2.GetComponent<Rigidbody>().AddForce(2.8f, 0, 1, ForceMode.Impulse);
+                }
                 trickBubble.SetActive(false);
                 Debug.Log("Completado");
                 trickPhase = 2;
+                if(!lastReactivation)
+                {
+                    StartCoroutine(AskAgain());
+                    lastReactivation = true;
+                }
             }
             
         }
         //else Debug.Log("Error");
+    }
+    IEnumerator AskAgain()
+    {
+        hasBall = false;
+        yield return new WaitForSeconds(Random.Range(15, 25));
+        Debug.Log("NPC is ready to ask again");
+        trickNumber = -2;
+        trickPhase = 0;
+        yield break;
     }
     void GenerateTrick()
     {

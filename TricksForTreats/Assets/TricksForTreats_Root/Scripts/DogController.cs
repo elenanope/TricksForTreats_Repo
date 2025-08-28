@@ -18,7 +18,7 @@ public class DogController : MonoBehaviour
     [SerializeField] float drinkTimeElapsed;
     [SerializeField] Animator dogAnim;
     [SerializeField] Rigidbody dogRb;
-    [SerializeField] GameObject lastBall;
+    public GameObject lastBall;
     [SerializeField] Vector3 forceDirection;
     Vector3 moveInput;
     
@@ -31,6 +31,7 @@ public class DogController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(hydration <= 0) gameStarted = false;
         if(gameStarted)
         {
             if (hydration > -1)
@@ -40,7 +41,7 @@ public class DogController : MonoBehaviour
                     if (hydration > -1)
                     {
                         drinkTimeElapsed += Time.deltaTime;
-                        if (drinkTimeElapsed > 10)
+                        if (drinkTimeElapsed > 5)
                         {
                             if(hydration >0)hydration--;
                             Debug.Log("Has perdido agua! Te queda " + hydration);
@@ -142,7 +143,7 @@ public class DogController : MonoBehaviour
         yield return new WaitForSeconds(1);
         lastBall.GetComponent<BoxCollider>().enabled = true;
         lastBall = null;
-        yield return null;
+        yield break;
     }
     public void Walking (InputAction.CallbackContext context)
     {
