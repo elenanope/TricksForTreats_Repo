@@ -42,7 +42,8 @@ public class PetitionRewardGenerator : MonoBehaviour
             Debug.Log("debug 1" + dogController.trickDone);
             if (dogController.trickDone == trickNumber && trickNumber >= 0)
             {
-                Instantiate(biscuitPrefab, transform.position, Quaternion.identity);
+                Vector3 biscuitSpawner = new Vector3(transform.position.x + 1, transform.position.y, transform.position.z - 1);
+                Instantiate(biscuitPrefab, biscuitSpawner, Quaternion.identity);
                 trickBubble.SetActive(false);
                 Debug.Log("Completado");
                 trickPhase = 2;
@@ -57,8 +58,6 @@ public class PetitionRewardGenerator : MonoBehaviour
         {
             trickNumber = Random.Range(0, availablesTricks);
             Debug.Log( "truco generado" + trickNumber);
-            
-           
         }
         trickBubble.GetComponent<SpriteRenderer>().enabled = false;
         trickBubble.SetActive(true);

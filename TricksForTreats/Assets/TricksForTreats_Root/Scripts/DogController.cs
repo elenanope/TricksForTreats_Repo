@@ -13,6 +13,7 @@ public class DogController : MonoBehaviour
     [SerializeField] float movSpeed;
     [SerializeField] Animator dogAnim;
     [SerializeField] Rigidbody dogRb;
+    [SerializeField] GameObject lastBall;
     Vector3 moveInput;
     
     void Start()
@@ -50,7 +51,8 @@ public class DogController : MonoBehaviour
             dogAnim.SetBool("ball", true);
             carryingBall = true;
             trickDone = 4;
-            other.gameObject.SetActive(false);
+            lastBall = other.gameObject;
+            lastBall.SetActive(false);
         }
         if(other.gameObject.name.Contains("biscuit"))
         {
@@ -86,6 +88,10 @@ public class DogController : MonoBehaviour
             trickDone = 0;
             if(carryingBall)
             {
+                dogAnim.SetBool("ball", false);
+                lastBall.SetActive(true);
+                if(isFacingRight)lastBall.transform.position = new Vector3(transform.position.x +1, transform.position.y, transform.position.z -1 );
+                else lastBall.transform.position = new Vector3(transform.position.x -1, transform.position.y, transform.position.z -1 );
                 //lanzar pelota fuera creándola/poniendo la antigua en esa posición
                 carryingBall = false;
             }
