@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         }
         if(clockFill == null)
         {
-            clockFill = GameObject.Find("clockFill").GetComponent<Image>(); //ver si esto va bien
+            clockFill = GameObject.Find("clockFill").GetComponent<Image>(); //ver si esto va bien //errores al restart
         }
         if(fadePanel == null)
         {
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
         }
         if(loadNewGame)
         {
-            if(!fadePanel.activeSelf)
+            if(!fadePanel.activeSelf)  //errores al restart
             {
                 StartCoroutine(Restart());
             }
