@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 public class DogController : MonoBehaviour
 {
-    public bool gameStarted;
+    //public bool gameStarted;
     int eatenBiscuits = 0;
     public int trickDone = -1; //0 bark, 1 sit, 2 paw, 3 platz, 4 ball
     [SerializeField] int hydration = 10;
@@ -21,7 +22,9 @@ public class DogController : MonoBehaviour
     public GameObject lastBall;
     [SerializeField] Vector3 forceDirection;
     Vector3 moveInput;
-    
+
+    [SerializeField] Image waterFill;
+
     void Start()
     {
         dogRb = GetComponent<Rigidbody>();
@@ -31,8 +34,9 @@ public class DogController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(hydration <= 0) gameStarted = false;
-        if(gameStarted)
+        waterFill.fillAmount = (float)hydration / 10f;
+        if(hydration <= 0) GameManager.Instance.gameStarted = false;
+        if(GameManager.Instance.gameStarted)
         {
             if (hydration > -1)
             {
@@ -79,7 +83,7 @@ public class DogController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if(gameStarted)
+        if(GameManager.Instance.gameStarted)
         {
             if (moveInput != null && moveInput.x == 0 && moveInput.z == 0)
             {
@@ -186,7 +190,7 @@ public class DogController : MonoBehaviour
     }
     public void StartGame ()
     {
-        gameStarted = true;
+        GameManager.Instance.gameStarted = true;
     }
     public void ExitGame ()
     {
