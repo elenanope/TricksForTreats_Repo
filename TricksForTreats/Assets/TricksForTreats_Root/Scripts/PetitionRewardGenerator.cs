@@ -15,6 +15,8 @@ public class PetitionRewardGenerator : MonoBehaviour
     [SerializeField] GameObject ballPrefab = null;
      DogController dogController;
     [SerializeField] Animator trickBubbleAnim;
+    [SerializeField] AudioClip sfx;
+    [SerializeField] AudioSource audioSource;
     /*
     private void Start()
     {
@@ -31,7 +33,9 @@ public class PetitionRewardGenerator : MonoBehaviour
         {
             if(trickPhase == 0)
             {
-                    dogController = other.gameObject.GetComponent<DogController>();
+                //audioSource.clip = sfx;
+                //audioSource.Play();
+                dogController = other.gameObject.GetComponent<DogController>();
                 if (!hasBall)
                 {
                     GenerateTrick();
@@ -55,9 +59,9 @@ public class PetitionRewardGenerator : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") && trickPhase==1)
+        if (other.CompareTag("Player"))
         {
-            if(!hasBall)
+            if (trickPhase== 1 && !hasBall)
             {
                 trickPhase = 0; 
                 trickBubble.SetActive(false);

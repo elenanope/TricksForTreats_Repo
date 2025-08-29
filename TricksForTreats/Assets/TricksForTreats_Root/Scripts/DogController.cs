@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 public class DogController : MonoBehaviour
 {
     //public bool gameStarted;
-    int eatenBiscuits = 0;
+    //int eatenBiscuits = 0;
     public int trickDone = -1; //0 bark, 1 sit, 2 paw, 3 platz, 4 ball
     [SerializeField] int hydration = 10;
     public bool carryingBall;
@@ -24,6 +24,10 @@ public class DogController : MonoBehaviour
     Vector3 moveInput;
 
     [SerializeField] Image waterFill;
+    [SerializeField] AudioClip waterDrop;
+    [SerializeField] AudioClip bark;
+    [SerializeField] AudioClip bite;
+    [SerializeField] AudioSource audioSource;
 
     void Start()
     {
@@ -35,8 +39,8 @@ public class DogController : MonoBehaviour
     void Update()
     {
         waterFill.fillAmount = (float)hydration / 10f;
-        if(hydration <= 0) GameManager.Instance.gameStarted = false;
-        if(GameManager.Instance.gameStarted)
+        if(hydration <= 0) GameManager.Instance.gameStarted = false; //anim corta, fade + pantalla del principio
+        if (GameManager.Instance.gameStarted)
         {
             if (hydration > -1)
             {
@@ -60,7 +64,13 @@ public class DogController : MonoBehaviour
                         drinkTimeElapsed += Time.deltaTime;
                         if (drinkTimeElapsed > 2)
                         {
-                            if(hydration < 10) hydration++;
+                            if(hydration < 10)
+                            {
+                                hydration++;
+                                audioSource.clip = waterDrop;
+                                audioSource.Play();
+                            }
+                                
                             Debug.Log("Has bebido agua! Tienes " + hydration);
                             drinkTimeElapsed = 0;
                         }
@@ -109,15 +119,21 @@ public class DogController : MonoBehaviour
         }
         if(other.gameObject.name.Contains("biscuit"))
         {
-            eatenBiscuits++;
+            GameManager.Instance.lastBiscuits++;
             other.gameObject.SetActive(false);
-            Debug.Log("Te has comido las siguientes galletas!"+eatenBiscuits);
+            audioSource.clip = bite;
+            audioSource.Play();
+            Debug.Log("Te has comido las siguientes galletas!"+ GameManager.Instance.lastBiscuits);
             //sonido win
         }
         if(other.gameObject.name.Contains("fountain"))
         {
             drinking = true;
             //sonido agua
+        }
+        if(other.gameObject.CompareTag("Finish"))
+        {
+            GameManager.Instance.LoadNextLevel();
         }
 
     }
@@ -161,6 +177,8 @@ public class DogController : MonoBehaviour
         if (context.performed && trickDone == -1)
         {
             trickDone = 0;
+            audioSource.clip = bark;
+            audioSource.Play();
             if(carryingBall)
             {
                 dogAnim.SetBool("ball", false);
