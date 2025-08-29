@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         }
         if(clockFill == null)
         {
-            clockFill = GameObject.Find("clockFill").GetComponent<Image>();
+            clockFill = GameObject.Find("clockFill").GetComponent<Image>(); //ver si esto va bien
         }
         if(fadePanel == null)
         {
