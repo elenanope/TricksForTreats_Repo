@@ -40,7 +40,11 @@ public class DogController : MonoBehaviour
     void Update()
     {
         waterFill.fillAmount = (float)hydration / 10f;
-        if(hydration <= 0) GameManager.Instance.gameStarted = false; //anim corta, fade + pantalla del principio
+        if(hydration <= 0 && GameManager.Instance.gameStarted)
+        {
+            GameManager.Instance.endNumber = 0;
+            GameManager.Instance.loadNewGame = true; //anim corta, fade + pantalla del principio
+        }
         if (GameManager.Instance.gameStarted)
         {
             if (hydration > -1)
