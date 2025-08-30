@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PetitionRewardGenerator : MonoBehaviour
 {
-     int trickNumber = -2;
+    [SerializeField] bool isActive;
+    int trickNumber = -2;
     [SerializeField] int availablesTricks = 4;
     [SerializeField] bool hasBall;
+    
     [SerializeField] bool lastReactivation;//0 not reactivated yet, 1 don't repeat
     [SerializeField] bool nearby;
     [SerializeField] int trickPhase;
@@ -29,7 +31,7 @@ public class PetitionRewardGenerator : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if(other.CompareTag("Player"))
+        if(other.CompareTag("Player") && isActive)
         {
             if(trickPhase == 0)
             {
@@ -73,37 +75,41 @@ public class PetitionRewardGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dogController != null && trickPhase != 2 && nearby)
+        if(isActive)
         {
-            //Debug.Log("primer debug: lo que ha hecho el perro, lo que deberia" + dogController.trickDone + trickNumber);
-            if ((dogController.trickDone == trickNumber && trickNumber >= 0) || (dogController.carryingBall))
+            if (dogController != null && trickPhase != 2 && nearby)
             {
-                if (trickNumber == 4)
+                //Debug.Log("primer debug: lo que ha hecho el perro, lo que deberia" + dogController.trickDone + trickNumber);
+                if ((dogController.trickDone == trickNumber && trickNumber >= 0) || (dogController.carryingBall))
                 {
-                    Debug.Log("Checkpoint1");
-                    dogController.gameObject.GetComponent<Animator>().SetBool("ball", false);
-                    dogController.carryingBall = false;
-                    dogController.lastBall = null;
+                    if (trickNumber == 4)
+                    {
+                        Debug.Log("Checkpoint1");
+                        dogController.gameObject.GetComponent<Animator>().SetBool("ball", false);
+                        dogController.carryingBall = false;
+                        dogController.lastBall = null;
+                    }
+                    Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z - 1.5f);
+                    GameObject biscuit = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
+                    biscuit.GetComponent<Rigidbody>().AddForce(2, 0, 1, ForceMode.Impulse);
+                    if (trickNumber == 4)
+                    {
+                        GameObject biscuit2 = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
+                        biscuit2.GetComponent<Rigidbody>().AddForce(2.8f, 0, 1, ForceMode.Impulse);
+                    }
+                    trickBubble.SetActive(false);
+                    Debug.Log("Completado");
+                    trickPhase = 2;
+                    if (!lastReactivation)
+                    {
+                        StartCoroutine(AskAgain());
+                        lastReactivation = true;
+                    }
                 }
-                Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z -1.5f);
-                GameObject biscuit = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
-                biscuit.GetComponent<Rigidbody>().AddForce(2, 0, 1, ForceMode.Impulse);
-                if(trickNumber == 4)
-                {
-                    GameObject biscuit2 = Instantiate(biscuitPrefab, objectSpawner, Quaternion.identity);
-                    biscuit2.GetComponent<Rigidbody>().AddForce(2.8f, 0, 1, ForceMode.Impulse);
-                }
-                trickBubble.SetActive(false);
-                Debug.Log("Completado");
-                trickPhase = 2;
-                if(!lastReactivation)
-                {
-                    StartCoroutine(AskAgain());
-                    lastReactivation = true;
-                }
+
             }
-            
         }
+        
         //else Debug.Log("Error");
     }
     IEnumerator AskAgain()

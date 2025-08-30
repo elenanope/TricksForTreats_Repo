@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     }
 
     public bool gameStarted;
+    [SerializeField] bool safeMode;
      bool loadNewGame;//0 nada, 1 fade, 2 load
     [SerializeField] float timePassed;
     public int lastBiscuits;
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject arrow;
     [SerializeField] Image clockFill;
     [SerializeField] GameObject fadePanel;
+    [SerializeField] GameObject cinematic = null;
 
     private void Awake()
     {
@@ -45,36 +47,38 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if(arrow == null)
-        {
-            arrow = GameObject.Find("clockArrow");
-        }
-        if(clockFill == null)
-        {
-            clockFill = GameObject.Find("clockFill").GetComponent<Image>(); //ver si esto va bien //errores al restart
-        }
-        if(fadePanel == null)
-        {
-            fadePanel = GameObject.Find("fadePanel");
-        }
-        if(loadNewGame)
-        {
-            if(!fadePanel.activeSelf)  //errores al restart
-            {
-                StartCoroutine(Restart());
-            }
-        }
-        
         if(gameStarted)
         {
             timePassed += Time.deltaTime;
-            
+            if (arrow == null)
+            {
+                arrow = GameObject.Find("clockArrow");
+            }
+            if (clockFill == null)
+            {
+                clockFill = GameObject.Find("clockFill")?.GetComponent<Image>(); //ver si esto va bien //errores al restart
+            }
+            if (fadePanel == null)
+            {
+                fadePanel = GameObject.Find("fadePanel");
+                //fadePanel.SetActive (false);
+            }
+            else fadePanel.SetActive (false);
         }
         else
         {
             if (timePassed > 10)
             {
                 loadNewGame = true;
+            }
+        }
+
+        if (loadNewGame)
+        {
+            StartCoroutine(Restart());
+            //if(!fadePanel.activeSelf)  //errores al restart
+            {
+                //StartCoroutine(Restart());
             }
         }
         
@@ -87,26 +91,46 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            clockFill.fillAmount = timePassed / 90f;
-            arrow.transform.eulerAngles = new Vector3(arrow.transform.rotation.x, arrow.transform.rotation.y, -(timePassed * 4));
+            if(clockFill != null) clockFill.fillAmount = timePassed / 90f;
+            if (arrow != null) arrow.transform.eulerAngles = new Vector3(arrow.transform.rotation.x, arrow.transform.rotation.y, -(timePassed * 4));
         }
     }
     
     IEnumerator Restart()
     {
+        loadNewGame = false;
+        timePassed = 0;
+        AudioManager.Instance.PlaySFX(4);
         lastBiscuits = 0;
         fadePanel.SetActive(true);
         yield return new WaitForSeconds(2);
-        loadNewGame = false;
-        SceneManager.LoadScene(actualScene);
+        if(safeMode)
+        {
+            SceneManager.LoadScene(actualScene);
+            fadePanel.SetActive(false);
+        }
+        else
+        {
+            totalBiscuits = 0;
+            SceneManager.LoadScene(0);
+            actualScene = 0;
+        }
+        AudioManager.Instance.restart = true;
+        yield break;
     }
     public void LoadNextLevel()
     {
+        timePassed = 0;
         totalBiscuits += lastBiscuits;
         lastBiscuits = 0;
         actualScene++;
         Debug.Log("Ahora tienes estas galletas: " + totalBiscuits);
         SceneManager.LoadScene(actualScene);
+        AudioManager.Instance.restart = true;
         //cargar siguiente escena
+    }
+    public void ChangeGameMode(bool easyMode)
+    {
+        safeMode = easyMode;
     }
 }

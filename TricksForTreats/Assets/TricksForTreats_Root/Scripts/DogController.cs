@@ -14,6 +14,7 @@ public class DogController : MonoBehaviour
     public bool carryingBall;
     [SerializeField] bool isFacingRight = true;
     [SerializeField] bool drinking = false;
+    [SerializeField] bool mandatoryCooldown = false;
     [SerializeField] float movSpeed;
     [SerializeField] float throwForce;
     [SerializeField] float drinkTimeElapsed;
@@ -24,10 +25,10 @@ public class DogController : MonoBehaviour
     Vector3 moveInput;
 
     [SerializeField] Image waterFill;
-    [SerializeField] AudioClip waterDrop;
-    [SerializeField] AudioClip bark;
-    [SerializeField] AudioClip bite;
-    [SerializeField] AudioSource audioSource;
+    //[SerializeField] AudioClip waterDrop;
+    //[SerializeField] AudioClip bark;
+    //[SerializeField] AudioClip bite;
+    //[SerializeField] AudioSource audioSource;
 
     void Start()
     {
@@ -67,8 +68,13 @@ public class DogController : MonoBehaviour
                             if(hydration < 10)
                             {
                                 hydration++;
-                                audioSource.clip = waterDrop;
-                                audioSource.Play();
+                                if (AudioManager.Instance.audioState < 2)
+                                {
+                                    //AudioManager.Instance.clipNumber = 0;
+                                    AudioManager.Instance.PlaySFX(0);
+                                }
+                                //audioSource.clip = waterDrop;
+                                //audioSource.Play();
                             }
                                 
                             Debug.Log("Has bebido agua! Tienes " + hydration);
@@ -121,8 +127,13 @@ public class DogController : MonoBehaviour
         {
             GameManager.Instance.lastBiscuits++;
             other.gameObject.SetActive(false);
-            audioSource.clip = bite;
-            audioSource.Play();
+            if (AudioManager.Instance.audioState < 2)
+            {
+                //AudioManager.Instance.clipNumber = 1;
+                AudioManager.Instance.PlaySFX(1);
+            }
+            //audioSource.clip = bite;
+            //audioSource.Play();
             Debug.Log("Te has comido las siguientes galletas!"+ GameManager.Instance.lastBiscuits);
             //sonido win
         }
@@ -165,6 +176,13 @@ public class DogController : MonoBehaviour
         lastBall = null;
         yield break;
     }
+    IEnumerator Cooldown()
+    {
+        mandatoryCooldown = true;
+        yield return new WaitForSeconds(1);
+        mandatoryCooldown = false;
+        yield break;
+    }
     public void Walking (InputAction.CallbackContext context)
     {
         
@@ -174,12 +192,16 @@ public class DogController : MonoBehaviour
     }
     public void Bark (InputAction.CallbackContext context)
     {
-        if (context.performed && trickDone == -1)
+        if (context.performed && trickDone == -1 && !mandatoryCooldown)
         {
+            StartCoroutine(Cooldown());
             trickDone = 0;
-            audioSource.clip = bark;
-            audioSource.Play();
-            if(carryingBall)
+            if (AudioManager.Instance.audioState < 2)
+            {
+                //AudioManager.Instance.clipNumber = 2;
+                AudioManager.Instance.PlaySFX(2);
+            }
+            if (carryingBall)
             {
                 dogAnim.SetBool("ball", false);
                 lastBall.transform.position = transform.position;
@@ -196,15 +218,27 @@ public class DogController : MonoBehaviour
     }
     public void Sit (InputAction.CallbackContext context)
     {
-        if (context.performed) trickDone = 1;
+        if (context.performed && !mandatoryCooldown)
+        {
+            StartCoroutine(Cooldown());
+            trickDone = 1;
+        }
     }
     public void Paw (InputAction.CallbackContext context)
     {
-        if (context.performed) trickDone = 2;
+        if (context.performed && !mandatoryCooldown)
+        {
+            StartCoroutine(Cooldown());
+            trickDone = 2;
+        }
     }
     public void Platz (InputAction.CallbackContext context)
     {
-        if (context.performed) trickDone = 3;
+        if (context.performed && !mandatoryCooldown) 
+        {
+            StartCoroutine(Cooldown());
+            trickDone = 3;
+        }
     }
     public void StartGame ()
     {
