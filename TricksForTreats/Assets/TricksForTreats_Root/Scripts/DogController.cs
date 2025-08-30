@@ -148,6 +148,7 @@ public class DogController : MonoBehaviour
         }
         if(other.gameObject.CompareTag("Finish"))
         {
+            dogAnim.SetBool("isWalking", false);
             GameManager.Instance.LoadNextLevel();
         }
 

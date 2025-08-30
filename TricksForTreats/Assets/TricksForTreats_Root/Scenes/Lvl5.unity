@@ -1457,6 +1457,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2580610259196546387, guid: c7dcd5016b9b20a43ab1b8ffe74c6bad,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6480625026284979034, guid: c7dcd5016b9b20a43ab1b8ffe74c6bad,
         type: 3}
       propertyPath: m_RootOrder
@@ -3044,6 +3049,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9050352532617409630, guid: 337f803deb9071d41b2665bd92a797fb,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3398,6 +3408,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1035410317753059278, guid: acfa3cf4e5776944187bc2a8c93fecc2,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5215166690566342585, guid: acfa3cf4e5776944187bc2a8c93fecc2,
         type: 3}
       propertyPath: m_RootOrder
@@ -3582,6 +3597,11 @@ PrefabInstance:
     - target: {fileID: 1468728734223322183, guid: f25ecc22c709e7b4e8960908b51c4cfd,
         type: 3}
       propertyPath: isActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1468728734223322183, guid: f25ecc22c709e7b4e8960908b51c4cfd,
+        type: 3}
+      propertyPath: lastReactivation
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7159497683472315413, guid: f25ecc22c709e7b4e8960908b51c4cfd,
@@ -4078,6 +4098,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 833191432110131001, guid: 8d99f0f0f1f94ff468f06d73cc99ae50,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1757996515043073343, guid: 8d99f0f0f1f94ff468f06d73cc99ae50,
         type: 3}
       propertyPath: m_Name
@@ -4216,6 +4241,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6150097096984652093, guid: b01ae9695d6bef64fb236ec4d7859a17,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4298,6 +4328,11 @@ PrefabInstance:
     - target: {fileID: 4298579547871591796, guid: 1d850993666e25045a423de5999b6265,
         type: 3}
       propertyPath: isActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298579547871591796, guid: 1d850993666e25045a423de5999b6265,
+        type: 3}
+      propertyPath: lastReactivation
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5515,6 +5550,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3945712046033011275, guid: 2ec1e7114fc7b4346bb6c1c77151bcc1,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6488,6 +6528,11 @@ PrefabInstance:
       propertyPath: isActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 80858878168788978, guid: 064d51778bacd7b4694285612060df2f,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1609733666504727875, guid: 064d51778bacd7b4694285612060df2f,
         type: 3}
       propertyPath: m_RootOrder
@@ -7072,7 +7117,7 @@ PrefabInstance:
     - target: {fileID: 8281954167558136843, guid: 187c72409a58a304ca06d8fe0debead7,
         type: 3}
       propertyPath: lastReactivation
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

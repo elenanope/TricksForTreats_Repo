@@ -58,6 +58,7 @@ public class AudioManager : MonoBehaviour
             audioSources[1].mute = false;
             if (audioState == 2) audioState = 0;
             else if (audioState == 3) audioState = 1;
+            if (audioSources[2]!=null) audioSources[2].mute = true;
         }
     } 
     public void PlaySFX(int clipNumber)

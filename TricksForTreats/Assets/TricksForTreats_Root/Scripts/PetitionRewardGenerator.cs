@@ -50,7 +50,7 @@ public class PetitionRewardGenerator : MonoBehaviour
                         trickNumber = 4;
                         Vector3 objectSpawner = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z - 1.5f);
                         GameObject ball = Instantiate(ballPrefab, objectSpawner, Quaternion.identity);
-                        ball.GetComponent<Rigidbody>().AddForce(Random.Range(4, 9), 0, Random.Range(1, 5), ForceMode.Impulse);
+                        ball.GetComponent<Rigidbody>().AddForce(Random.Range(4, 7), 0, Random.Range(1, 5), ForceMode.Impulse);
                         Debug.Log("Bola lanzada");
                         trickPhase = 1;
                     }
@@ -80,7 +80,7 @@ public class PetitionRewardGenerator : MonoBehaviour
             if (dogController != null && trickPhase != 2 && nearby)
             {
                 //Debug.Log("primer debug: lo que ha hecho el perro, lo que deberia" + dogController.trickDone + trickNumber);
-                if ((dogController.trickDone == trickNumber && trickNumber >= 0) || (dogController.carryingBall))
+                if ((dogController.trickDone == trickNumber && trickNumber >= 0) || (dogController.carryingBall &&trickNumber ==4))
                 {
                     if (trickNumber == 4)
                     {

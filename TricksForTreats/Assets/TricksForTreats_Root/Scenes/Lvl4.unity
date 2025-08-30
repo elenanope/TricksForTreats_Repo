@@ -1460,7 +1460,7 @@ PrefabInstance:
     - target: {fileID: 2580610259196546387, guid: c7dcd5016b9b20a43ab1b8ffe74c6bad,
         type: 3}
       propertyPath: lastReactivation
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6480625026284979034, guid: c7dcd5016b9b20a43ab1b8ffe74c6bad,
         type: 3}
@@ -4163,6 +4163,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1437279850}
     m_Modifications:
+    - target: {fileID: 2607300837511864964, guid: 9769a9e6648a36e42983905f223f3915,
+        type: 3}
+      propertyPath: lastReactivation
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4095156121835269979, guid: 9769a9e6648a36e42983905f223f3915,
         type: 3}
       propertyPath: m_RootOrder
@@ -5872,7 +5877,7 @@ PrefabInstance:
     - target: {fileID: 80858878168788978, guid: 064d51778bacd7b4694285612060df2f,
         type: 3}
       propertyPath: lastReactivation
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1609733666504727875, guid: 064d51778bacd7b4694285612060df2f,
         type: 3}
@@ -6524,7 +6529,7 @@ PrefabInstance:
     - target: {fileID: 8281954167558136843, guid: 187c72409a58a304ca06d8fe0debead7,
         type: 3}
       propertyPath: hasBall
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8281954167558136843, guid: 187c72409a58a304ca06d8fe0debead7,
         type: 3}
@@ -6534,7 +6539,7 @@ PrefabInstance:
     - target: {fileID: 8281954167558136843, guid: 187c72409a58a304ca06d8fe0debead7,
         type: 3}
       propertyPath: lastReactivation
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

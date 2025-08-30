@@ -22,13 +22,14 @@ public class GameManager : MonoBehaviour
     }
 
     public bool gameStarted;
+    //[SerializeField] bool gameOpened;
     [SerializeField] bool safeMode;
     public bool loadNewGame;//0 nada, 1 fade, 2 load
     [SerializeField] float timePassed;
     public int lastBiscuits;
     public int endNumber;
     [SerializeField] int totalBiscuits;
-    int actualScene;
+    [SerializeField] int actualScene;
     [SerializeField] GameObject arrow;
     [SerializeField] Image clockFill;
     [SerializeField] GameObject fadePanel;
@@ -46,33 +47,45 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
 
         DontDestroyOnLoad(this.gameObject);
-
-        fadePanel.SetActive(false);
-        actualScene = 0;
-        fadePanel2 = GameObject.Find("fadePanel1");
-        StartCoroutine(FadeIn());
+        if (actualScene != 0)
+        {
+            fadePanel.SetActive(false);
+            fadePanel2 = GameObject.Find("fadePanel1");
+        }
+            
+        //StartCoroutine(FadeIn());
     }
 
 
     void Update()
     {
-        if(gameStarted)
+
+        if (actualScene == 0)
+        {
+            if (cinematic != null && actualScene == 0)
+            {
+                AudioManager.Instance.ChangeMusic(false);
+                AudioManager.Instance.ChangeSFX(false);
+                if (!cinematic.GetComponent<Collider>().enabled)
+                {
+                    LoadNextLevel();
+                    AudioManager.Instance.ChangeMusic(true);
+                    AudioManager.Instance.ChangeSFX(true);
+                }
+            }
+        }
+        
+        
+        if (gameStarted )
         {
             timePassed += Time.deltaTime;
-            if (arrow == null)
-            {
-                arrow = GameObject.Find("clockArrow");
-            }
-            if (clockFill == null)
-            {
-                clockFill = GameObject.Find("clockFill")?.GetComponent<Image>(); //ver si esto va bien //errores al restart
-            }
+
             if (fadePanel == null)
             {
                 fadePanel = GameObject.Find("fadePanel");
                 //fadePanel.SetActive (false);
             }
-            else fadePanel.SetActive (false);
+            else fadePanel.SetActive(false);
             if (fadePanel2 == null)
             {
                 fadePanel2 = GameObject.Find("fadePanel1");
@@ -83,13 +96,13 @@ public class GameManager : MonoBehaviour
             {
                 endPanels[0] = GameObject.Find("LoseDrinkPanel");
             }
-            else endPanels[0].SetActive (false);
+            else endPanels[0].SetActive(false);
             if (endPanels[1] == null)
             {
                 endPanels[1] = GameObject.Find("LoseTimePanel");
             }
-            else endPanels[1].SetActive (false);
-            if(actualScene == 4)
+            else endPanels[1].SetActive(false);
+            if (actualScene == 5)
             {
                 if (endPanels[2] == null)
                 {
@@ -102,15 +115,37 @@ public class GameManager : MonoBehaviour
                 }
                 else endPanels[3].SetActive(false);
             }
+            if (arrow == null)
+            {
+                arrow = GameObject.Find("clockArrow");
+            }
+            if (clockFill == null)
+            {
+                clockFill = GameObject.Find("clockFill")?.GetComponent<Image>(); //ver si esto va bien //errores al restart
+            }
+            
         }
-
+        else
+        {
+            if(actualScene == 1)
+            {
+                if (endPanels[0] == null)
+                {
+                    endPanels[0] = GameObject.Find("LoseDrinkPanel");
+                }
+                else endPanels[0].SetActive(false);
+                if (endPanels[1] == null)
+                {
+                    endPanels[1] = GameObject.Find("LoseTimePanel");
+                }
+                else endPanels[1].SetActive(false);
+            }
+            
+        }
         if (loadNewGame)
         {
-            StartCoroutine(Restart());
-            //if(!fadePanel.activeSelf)  //errores al restart
-            {
-                //StartCoroutine(Restart());
-            }
+            StartCoroutine(Restart(false));
+            loadNewGame = false;
         }
         
         if(timePassed >= 90)
@@ -140,37 +175,49 @@ public class GameManager : MonoBehaviour
                 imageToFade.a = Mathf.Clamp01(imageToFade.a - fadeSpeed * Time.deltaTime);
                 fadePanel2.GetComponent<Image>().color = imageToFade;
             }
+            else if(fading==3)
+            {
+                imageToFade.a = Mathf.Clamp01(imageToFade.a - fadeSpeed * Time.deltaTime);
+                endPanels[endNumber].GetComponent<Image>().color = imageToFade;
+            }
             
         }
     }
     
-    IEnumerator Restart()
+    IEnumerator Restart(bool won)
     {
+        //gameOpened = true;
+        gameStarted = false;
         loadNewGame = false;
         timePassed = 0;
-        AudioManager.Instance.PlaySFX(4);
         lastBiscuits = 0;
+        if(!won)AudioManager.Instance.PlaySFX(4);
+        yield return new WaitForSeconds(1);
         fadePanel.SetActive(true);
+        imageToFade = fadePanel.GetComponent<Image>().color;
+        fading = 1;
         yield return new WaitForSeconds(2);
+        fading = 0;
         endPanels[endNumber].SetActive(true);
         imageToFade = endPanels[endNumber].GetComponent<Image>().color;
-        yield return new WaitForSeconds(1);
-        fading = 1;
         yield return new WaitForSeconds(3);
-        fading= 0;
-
+        fading = 3;
+        yield return new WaitForSeconds(3);
+        fading = 0;
         if (safeMode)
         {
             SceneManager.LoadScene(actualScene);
+            gameStarted = true;
             fadePanel.SetActive(false);
         }
         else
         {
             totalBiscuits = 0;
-            SceneManager.LoadScene(0);
-            actualScene = 0;
+            SceneManager.LoadScene(1);
+            actualScene = 1;
         }
         AudioManager.Instance.restart = true;
+        StartCoroutine(FadeIn());
         yield break;
     }
     IEnumerator FadeOut()
@@ -178,12 +225,11 @@ public class GameManager : MonoBehaviour
         gameStarted = false;
         totalBiscuits += lastBiscuits;
         lastBiscuits = 0;
-        if (actualScene < 4)
+        if (actualScene < 5)
         {
             actualScene++;
             Debug.Log("Ahora tienes estas galletas: " + totalBiscuits);
-            yield return new WaitForSeconds(1);
-
+            fadePanel.SetActive(true);
             imageToFade = fadePanel.GetComponent<Image>().color;
             fading = 1;
             yield return new WaitForSeconds(2);
@@ -197,12 +243,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (totalBiscuits < 37) //revisar cuando niveles montados
+            if (totalBiscuits < 30) //revisar cuando niveles montados
             {
                 endNumber = 2;
             }
             else endNumber = 3;
-            Restart();
+            StartCoroutine(Restart(true));
         }
         
         yield break;
@@ -211,8 +257,8 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("fading");
         yield return new WaitForSeconds(1);
-
-        //fadePanel2 = GameObject.Find("fadePanel1");
+        fadePanel2 = GameObject.Find("fadePanel1");
+        fadePanel2.SetActive(true);
         imageToFade = fadePanel2.GetComponent<Image>().color;
         fading = 2;
         yield return new WaitForSeconds(1.6f);
@@ -222,8 +268,9 @@ public class GameManager : MonoBehaviour
     }
     public void LoadNextLevel()
     {
-        if(actualScene<4)StartCoroutine(FadeOut());
-        else StartCoroutine(Restart());
+        StartCoroutine(FadeOut());
+        //if(actualScene<5)StartCoroutine(FadeOut());
+        //else StartCoroutine(Restart(true));
             
         //cargar siguiente escena
     }
